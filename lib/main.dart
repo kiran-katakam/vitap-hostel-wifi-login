@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wifi/credentials.dart';
+import 'package:wifi/login.dart';
 import 'package:wifi/utils.dart';
 
 void main() {
@@ -17,26 +18,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: FutureBuilder(
-          future: SharedPreferences.getInstance(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.data == null) {
-                return Center(
-                  child: Text(
-                    "Shared Preferences isn't loaded, your storage might be full",
-                  ),
-                );
+      home: FutureBuilder(
+        future: SharedPreferences.getInstance(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              if (snapshot.data!.containsKey(usernameKey)) {
+                return Login();
               } else {
-                if (!snapshot.data!.containsKey(usernameKey)) {
-                  return GetCredentials();
-                }
+                return GetCredentials();
               }
+            } else {
+              return Scaffold(body: Center(child: Text("Something is Fucked Up ig"),),);
             }
-            return CircularProgressIndicator();
-          },
-        ),
+          }
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        },
       ),
     );
   }
