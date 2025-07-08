@@ -29,7 +29,10 @@ class _LoginState extends State<Login> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
-                  return Text("Something Went Wriong\n${snapshot.error}", textAlign: TextAlign.center,);
+                  return Text(
+                    "Something Went Wriong\n${snapshot.error}",
+                    textAlign: TextAlign.center,
+                  );
                 }
                 if (snapshot.hasData) {
                   if (snapshot.data!.body.contains("Limit Reached")) {
@@ -87,7 +90,7 @@ class _LoginState extends State<Login> {
               isLogginIn = true;
             });
           },
-          
+
           child: Icon(Icons.refresh_rounded),
         ),
       ),

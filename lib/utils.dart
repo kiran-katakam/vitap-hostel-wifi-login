@@ -25,9 +25,7 @@ Future<bool> bindToWifiNetwork() async {
 Future<http.Client> createSecureHttpClient() async {
   final context = SecurityContext(withTrustedRoots: true);
 
-  final ByteData certData = await rootBundle.load(
-    'assets/ClientAuth_CA.crt',
-  );
+  final ByteData certData = await rootBundle.load('assets/ClientAuth_CA.crt');
   context.setTrustedCertificatesBytes(certData.buffer.asUint8List());
 
   final HttpClient httpClient = HttpClient(context: context);
@@ -129,7 +127,7 @@ Future<void> saveCredentials(
       if (context.mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Login(),)
+          MaterialPageRoute(builder: (context) => Login()),
         );
       }
     } else {
