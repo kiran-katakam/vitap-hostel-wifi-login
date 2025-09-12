@@ -3,7 +3,7 @@
 
 A lightweight Flutter app that **automatically logs you into the VIT-AP hostel WiFi network** (`hfw.vitap.ac.in:8090`) — no browser required.
 
-> 📍 Exclusively for **VIT-AP hostel students** — MH1, MH2, MH3, MH4 only.
+> 📍 Exclusively for **VIT-AP hostel students** — MH1, MH2, MH3, MH4, MH5 only.
 
 ---
 
