@@ -30,7 +30,7 @@ class _LoginState extends State<Login> {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
                   return Text(
-                    "Something Went Wriong\n${snapshot.error}",
+                    "Something Went Wrong\n${snapshot.error}",
                     textAlign: TextAlign.center,
                   );
                 }
@@ -40,19 +40,30 @@ class _LoginState extends State<Login> {
                   } else if (snapshot.data!.body.contains(
                     "You are signed in as",
                   )) {
-                    return Column(
-                      children: [
-                        Text("You are Logged In"),
-                        SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              isLogginIn = false;
-                            });
-                          },
-                          child: Text("Logout"),
-                        ),
-                      ],
+                    return FutureBuilder(
+                      future: reportNetworkConnectivity(),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.connectionState ==
+                            ConnectionState.done) {
+                          if (asyncSnapshot.data!) {
+                            return Column(
+                              children: [
+                                Text("You are Logged In"),
+                                SizedBox(height: 24),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    setState(() {
+                                      isLogginIn = false;
+                                    });
+                                  },
+                                  child: Text("Logout"),
+                                ),
+                              ],
+                            );
+                          }
+                        }
+                        return CircularProgressIndicator();
+                      },
                     );
                   } else if (snapshot.data!.body.contains("signed out")) {
                     return Column(
