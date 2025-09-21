@@ -11,13 +11,26 @@ final String passwordKey = "password";
 
 final RegExp usernameRegex = RegExp(r'^\d{2}[A-Z]{3}\d{4,5}$');
 
+const platform = MethodChannel('wifi.binding/channel');
 Future<bool> bindToWifiNetwork() async {
-  const platform = MethodChannel('wifi.binding/channel');
   try {
     final result = await platform.invokeMethod('bindToWifi');
     return result == true;
   } on PlatformException catch (e) {
     debugPrint("Failed to bind to WiFi: ${e.message}");
+    return false;
+  }
+}
+
+Future<bool> reportNetworkConnectivity() async {
+  try {
+    final bool result = await platform.invokeMethod(
+      'reportNetworkConnectivity',
+    );
+    debugPrint('Connectivity reported: $result');
+    return result;
+  } on PlatformException catch (e) {
+    debugPrint("Error: ${e.message}");
     return false;
   }
 }
