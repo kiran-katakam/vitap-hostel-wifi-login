@@ -45,10 +45,10 @@ class _UniversityLoginState extends State<UniversityLogin> {
             await reportNetworkConnectivity();
           },
           onHttpError: (HttpResponseError error) {
-            print("HTTP Error: ${error.response}");
+            debugPrint("HTTP Error: ${error.response}");
           },
           onWebResourceError: (WebResourceError error) {
-            print("Resource Error: ${error.description}");
+            debugPrint("Resource Error: ${error.description}");
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https')) {
