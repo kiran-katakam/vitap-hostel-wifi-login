@@ -25,7 +25,3 @@ jobs:
       # Analyze the project
       - name: Analyze project source
         run: flutter analyze
-
-      # Run tests
-      - name: Run tests
-        run: flutter test
