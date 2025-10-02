@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
+import 'package:network_info_plus/network_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wifi/login.dart';
+import 'package:wifi/credentials.dart';
+import 'package:wifi/hostel_login.dart';
+import 'package:wifi/university_login.dart';
 
 final String usernameKey = "username";
 final String passwordKey = "password";
@@ -51,7 +55,6 @@ Future<http.Client> createSecureHttpClient() async {
 }
 
 Future<http.Response> login() async {
-  await bindToWifiNetwork();
   final client = await createSecureHttpClient();
   final SharedPreferences sharedPreferences =
       await SharedPreferences.getInstance();
@@ -140,7 +143,9 @@ Future<void> saveCredentials(
       if (context.mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Login()),
+          MaterialPageRoute(
+            builder: (context) => HostelLogin(),
+          ), //!!!!! WRITE A FUCNTION TO CHANGE THIS ROUTE
         );
       }
     } else {
@@ -165,4 +170,129 @@ Future<void> saveCredentials(
       ),
     );
   }
+}
+
+Future<bool> doWeHaveCredentials() async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+
+  return sharedPreferences.containsKey(usernameKey);
+}
+
+List<String> loadUsernameList(String username) {
+  final List<String> superscripts = [
+    "⁰",
+    "¹",
+    "²",
+    "³",
+    "⁴",
+    "⁵",
+    "⁶",
+    "⁷",
+    "⁸",
+    "⁹",
+  ];
+  final List<String> usernameList = [username];
+  var id = usernameList.elementAt(0);
+
+  for (int k = 0; k <= usernameList.length; k++) {
+    if (k < usernameList.length) {
+      id = usernameList.elementAt(k);
+    }
+    for (int i = 0; i < id.length; i++) {
+      var charid = id.split("");
+      if (isNumeric(charid[i])) {
+        charid[i] = superscripts[int.parse(charid[i])];
+        if (!usernameList.contains(join(charid))) {
+          usernameList.add(join(charid));
+        }
+      }
+    }
+  }
+  return usernameList;
+}
+
+bool isNumeric(String s) {
+  return int.tryParse(s) != null;
+}
+
+String join(List<String> list) {
+  String str = "";
+  for (int i = 0; i < list.length; i++) {
+    str += list[i];
+  }
+  return str;
+}
+
+enum WifiType { hostel, university, none }
+
+Future<WifiType> wifiType() async {
+  final info = NetworkInfo();
+
+  while (!await Permission.location.isGranted) {
+    if (await Permission.location.request().isGranted) {
+      final name = await info.getWifiName();
+      if (name == "VIT-AP") {
+        return WifiType.university;
+      } else {
+        return WifiType.hostel;
+      }
+    }
+  }
+  return WifiType.none;
+}
+
+Future<Widget> mainNavigator() async {
+  return FutureBuilder(
+    future: bindToWifiNetwork(),
+    builder: (context, snapshot1) {
+      if (snapshot1.connectionState == ConnectionState.done) {
+        return FutureBuilder(
+          future: doWeHaveCredentials(),
+          builder: (context, snapshot2) {
+            if (snapshot2.connectionState == ConnectionState.done) {
+              if (snapshot2.hasData) {
+                if (snapshot2.data!) {
+                  return FutureBuilder(
+                    future: wifiType(),
+                    builder: (context, snapshot3) {
+                      if (snapshot3.connectionState == ConnectionState.done) {
+                        if (snapshot3.hasData) {
+                          if (snapshot3.data! == WifiType.university) {
+                            return UniversityLogin();
+                          } else if (snapshot3.data! == WifiType.hostel){
+                            return HostelLogin();
+                          } else {
+                            return scaffoldWithCenteredText("WifiType Returned None");
+                          }
+                        } else {
+                          return scaffoldWithCenteredText(
+                            "Error in Network Connectivity Plus",
+                          );
+                        }
+                      }
+                      return scaffoldWithCenteredCircularProgressIndicator();
+                    },
+                  );
+                } else {
+                  return GetCredentials();
+                }
+              } else {
+                return scaffoldWithCenteredText("Error in Shared Preferences");
+              }
+            }
+            return scaffoldWithCenteredCircularProgressIndicator();
+          },
+        );
+      }
+      return scaffoldWithCenteredCircularProgressIndicator();
+    },
+  );
+}
+
+Scaffold scaffoldWithCenteredCircularProgressIndicator() {
+  return Scaffold(body: Center(child: CircularProgressIndicator()));
+}
+
+Scaffold scaffoldWithCenteredText(String text) {
+  return Scaffold(body: Center(child: Text(text)));
 }
