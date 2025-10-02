@@ -144,8 +144,28 @@ Future<void> saveCredentials(
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HostelLogin(),
-          ), //!!!!! WRITE A FUCNTION TO CHANGE THIS ROUTE
+            builder: (context) => FutureBuilder(
+              future: wifiType(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data! == WifiType.university) {
+                      return UniversityLogin();
+                    } else if (snapshot.data! == WifiType.hostel) {
+                      return HostelLogin();
+                    } else {
+                      return scaffoldWithCenteredText("WifiType Returned None");
+                    }
+                  } else {
+                    return scaffoldWithCenteredText(
+                      "Error in Network Connectivity Plus",
+                    );
+                  }
+                }
+                return scaffoldWithCenteredCircularProgressIndicator();
+              },
+            ),
+          ),
         );
       }
     } else {
@@ -238,7 +258,12 @@ Future<WifiType> wifiType() async {
       }
     }
   }
-  return WifiType.none;
+  final name = await info.getWifiName();
+  if (name == "VIT-AP") {
+    return WifiType.university;
+  } else {
+    return WifiType.hostel;
+  }
 }
 
 Future<Widget> mainNavigator() async {
@@ -259,10 +284,12 @@ Future<Widget> mainNavigator() async {
                         if (snapshot3.hasData) {
                           if (snapshot3.data! == WifiType.university) {
                             return UniversityLogin();
-                          } else if (snapshot3.data! == WifiType.hostel){
+                          } else if (snapshot3.data! == WifiType.hostel) {
                             return HostelLogin();
                           } else {
-                            return scaffoldWithCenteredText("WifiType Returned None");
+                            return scaffoldWithCenteredText(
+                              "WifiType Returned None",
+                            );
                           }
                         } else {
                           return scaffoldWithCenteredText(
