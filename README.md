@@ -1,99 +1,81 @@
+# Infinity
 
-# VIT-AP Hostel WiFi Auto Login
+A **lightweight Flutter app** that automatically logs you into **VIT‑AP WiFi** — supports both **Hostel** (Sophos/captive portal with pinned certificate) and **University** networks.
 
-A lightweight Flutter app that **automatically logs you into the VIT-AP hostel WiFi network** (`hfw.vitap.ac.in:8090`) — no browser required.
+> Automatically detects whether you are on University Wi-Fi or Hostel Wi-Fi and switches to the respective login flow.
 
-> 📍 Exclusively for **VIT-AP hostel students** — MH1, MH2, MH3, MH4, MH5 only.
 
----
+## Features
 
-## 🚀 Features
+* **Automatic login** for Hostel and University Wi-Fi
+* Auto-detects WiFi SSID and selects **Hostel** or **University** login flow
+* **Hostel**: Certificate pinning & WiFi binding using `ClientAuth_CA.crt`
+* **University**: Supports multiple “superscripted” usernames for unlimited login
+* Logout functionality for Hostel Wi-Fi
+* Credentials are **stored locally on your device**
 
-- 🔐 Auto login to VIT-AP’s captive portal
-- 📡 Binds to WiFi before attempting login
-- 🧾 Uses a bundled `.crt` certificate for secure HTTPS communication
-- 💾 Stores your credentials locally with SharedPreferences
-- 🔄 One-tap logout and re-login
-- 💡 UI shows login state clearly
 
----
 
-## 🛠 Setup Instructions
+## Quick Start
 
-### 1. Clone the repo
 ```bash
 git clone https://github.com/kiran-katakam/vitap-hostel-wifi-login.git
 cd vitap-hostel-wifi-login
+flutter pub get
+flutter run
 ```
 
-### 2. Ensure the certificate is added to `assets/`
-The required certificate (`ClientAuth_CA.crt`) is already included in the `assets` directory.
+### Ensure the hostel certificate exists in `assets/`:
 
-### 3. Confirm `pubspec.yaml` includes the asset
 ```yaml
 flutter:
   assets:
     - assets/ClientAuth_CA.crt
 ```
 
-### 4. Get packages
+
+
+## Usage
+
+1. Connect to **VIT‑AP WiFi** (Hostel or University)
+2. Open the app → automatic SSID detection and login
+
+**University Wi-Fi:**
+
+* App logs you in automatically
+* Connectivity status will switch to Wi-Fi from mobile data
+* No need to logout, unlimited login credentials handled automatically
+
+**Hostel Wi-Fi:**
+* Automatic login
+* Button to logout manually
+* Floating Action Button (FAB) to refresh/login easily
+
+
+
+## Project Structure
+
 ```bash
-flutter pub get
-```
-
-### 5. Run the app
-```bash
-flutter run
-```
-
----
-
-## 🧑‍💻 How It Works
-
-- Connect to the VIT-AP hostel WiFi.
-- Open the app — it reads your saved credentials.
-- The app binds to the WiFi network via a platform channel.
-- It sends a POST request to `https://hfw.vitap.ac.in:8090/login.xml` using a secure HTTPS client pinned with the local `.crt`.
-
----
-
-## ⚠️ Notes
-
-- 📶 Works only inside VIT-AP campus on the hostel WiFi (MH1–MH4).
-- ❓ *It has not been tested on LH (Ladies Hostel) WiFi. If you're from LH and this works for you, please let me know so I can update this app's info.*
-- 🔔 After login, Android might still show the **“Sign in to Wi-Fi”** notification. You **must click it once** so the system browser can open and validate the connection. After that, the network will switch to WiFi.
-- 🔐 Your credentials are stored **only on your device** using `SharedPreferences`.
-
----
-
-## 📂 Structure
-
-```
 lib/
-├── login.dart              # UI logic
-├── utils.dart              # Login/logout, cert handling
+├─ main.dart              # App entry point
+├─ credentials.dart       # Screen for entering username/password
+├─ utils.dart             # Utility functions, WiFi detection, login/logout
+├─ hostel_login.dart      # Hostel login/logout screen
+├─ university_login.dart  # University login screen (WebView)
 assets/
-└── ClientAuth_CA.crt       # Certificate used to trust the captive portal
+└─ ClientAuth_CA.crt      # Sophos certificate for Hostel WiFi
 ```
 
----
 
-## 🔧 Built With
 
-- Flutter & Dart
-- `SharedPreferences`
-- `HttpClient` + custom `SecurityContext`
-- Platform Channels (for WiFi binding)
+## Security & Ethics
 
----
-
-## ✍ Author
-
-Made with ❤️ for VIT-AP hostelites  
-by Kiran Katakam
+* Credentials are stored **locally** and **not transmitted to third parties**
+* Certificate pinning ensures secure connection for Hostel Wi-Fi
+* **Use responsibly** — the app is intended for personal convenience only
 
 ---
 
-## 📄 License
+## License
 
-MIT License
+This project is licensed under the **MIT License** — see [[LICENSE](https://mit-license.org/)] for details.

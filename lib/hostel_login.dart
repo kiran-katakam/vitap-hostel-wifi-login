@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:wifi/utils.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class HostelLogin extends StatefulWidget {
+  const HostelLogin({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<HostelLogin> createState() => _HostelLoginState();
 }
 
-class _LoginState extends State<Login> {
+class _HostelLoginState extends State<HostelLogin> {
   late bool isLogginIn;
   @override
   void initState() {

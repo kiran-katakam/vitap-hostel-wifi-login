@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wifi/credentials.dart';
-import 'package:wifi/login.dart';
 import 'package:wifi/utils.dart';
 
 void main() {
@@ -18,20 +15,12 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
-        future: SharedPreferences.getInstance(),
+        future: mainNavigator(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              if (snapshot.data!.containsKey(usernameKey)) {
-                return Login();
-              } else {
-                return GetCredentials();
-              }
-            } else {
-              return Scaffold(body: Center(child: Text("Something is Fucked Up ig"),),);
-            }
+            return snapshot.data!;
           }
-          return Scaffold(body: Center(child: CircularProgressIndicator()));
+          return scaffoldWithCenteredCircularProgressIndicator();
         },
       ),
     );
